@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <raylib.h>
+#include <unistd.h>
 
 #define STB_DS_IMPLEMENTATION
 #include <stb/stb_ds.h>
@@ -23,16 +24,21 @@ void load_sprites(char *const res_path) {
     DIR *dir = opendir(res_path);
     assert(dir);
 
-    char path[128];
+    char cwd[512];
+    getcwd(cwd, sizeof(cwd)); // thx to @UsecaseNotFound
+    char path[512];
 
     uint32_t i = 0;
     while (dp = readdir(dir)) {
         if (i > 1) {
-            snprintf(path, sizeof(path), "%s/%s", res_path, dp->d_name);
+            snprintf(path, sizeof(path), "%s/%s/%s", cwd, res_path, dp->d_name);
             char name[128];
             strncpy(name, dp->d_name, sizeof(name));
             name[sizeof(name) - 1] = '\0';
-            char *sprite_name = strtok(name, ".");
+            char *sprite_name;
+            for (int j = sizeof(name); j > 0; j--) // thx to @UsecaseNotFound
+                if (name[j] == '.')
+                    sprite_name = &name[j];
             shput(assets.sprites, strdup(sprite_name), LoadTexture(path));
         }
         i++;
@@ -52,7 +58,7 @@ int main(void) {
         BeginDrawing();
         ClearBackground((Color){ 20, 20, 20, 255 });
 
-        DrawTexture(get_sprite("sdksnjdskdjsdj"), 0, 0, WHITE);
+        DrawTexture(get_sprite("bebe"), 0, 0, WHITE);
 
         EndDrawing();
     }
