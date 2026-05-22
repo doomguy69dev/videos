@@ -35,10 +35,10 @@ void load_sprites(char *const res_path) {
             char name[128];
             strncpy(name, dp->d_name, sizeof(name));
             name[sizeof(name) - 1] = '\0';
-            char *sprite_name;
+            char *sprite_name = name;
             for (int j = sizeof(name); j > 0; j--) // thx to @UsecaseNotFound
                 if (name[j] == '.')
-                    sprite_name = &name[j];
+                    name[j] = '\0';
             shput(assets.sprites, strdup(sprite_name), LoadTexture(path));
         }
         i++;
